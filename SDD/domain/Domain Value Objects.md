@@ -56,8 +56,9 @@ Cada usuario tiene un único rol dentro del sistema.
 | SUPERVISOR | Supervisor | Perfil de consulta y seguimiento operativo. |
 
 ---
-# WarehouseType
 
+# WarehouseType
+ 
 ## Descripción
 
 Representa la clasificación de una bodega según la entidad responsable de su administración.
