@@ -28,6 +28,9 @@ DomainCatalog (Abstract)
 ├── OperationType
 └── Currency
 ```
+
+---
+
 # SystemRole
 
 ## Descripción
@@ -53,4 +56,64 @@ Cada usuario tiene un único rol dentro del sistema.
 | SUPERVISOR | Supervisor | Perfil de consulta y seguimiento operativo. |
 
 ---
+# WarehouseType
+
+## Descripción
+
+Representa la clasificación de una bodega según la entidad responsable de su administración.
+
+## Hereda de
+
+`DomainCatalog`
+
+## Valores permitidos
+
+| Código | Nombre | Descripción |
+| ------ | ------ | ----------- |
+| MARKETPLACE | Marketplace Warehouse | Bodega administrada directamente por el marketplace. |
+| SELLER | Seller Warehouse | Bodega administrada por un vendedor. |
+
+---
+
+# ProductType
+
+## Descripción
+
+Representa la naturaleza de un producto publicado en el catálogo.
+
+Determina si el producto requiere inventario y despacho físico, o si su entrega es inmediata tras el pago.
+
+## Hereda de
+
+`DomainCatalog`
+
+## Valores permitidos
+
+| Código | Nombre | Descripción |
+| ------ | ------ | ----------- |
+| PHYSICAL | Physical Product | Producto que requiere inventario y despacho físico. |
+| DIGITAL | Digital Product | Producto de entrega inmediata tras la confirmación del pago. |
+
+---
+
+# ProductStatus
+
+## Descripción
+
+Representa la condición de un producto dentro del catálogo del marketplace.
+
+Determina si el producto es visible y puede ser adquirido por los compradores.
+
+## Hereda de
+
+`DomainCatalog`
+
+## Valores permitidos
+
+| Código | Nombre | Descripción |
+| ------ | ------ | ----------- |
+| PUBLISHED | Published | El producto es visible en el catálogo y puede ser adquirido. |
+| SUSPENDED | Suspended | El producto no es visible temporalmente en el catálogo. |
+| DISCONTINUED | Discontinued | El producto ha sido retirado definitivamente del catálogo. |
+
 ---
