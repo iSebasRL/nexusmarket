@@ -7,11 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Address {
+public class CartItem {
     private String identifier;
-    private String recipientName;
-    private String addressLine;
-    private String city;
-    private String country;
-    private String phoneNumber;
+    private Product product;
+    private ProductVariant variant;
+    private Integer quantity;
+    private Cart cart;
 }
