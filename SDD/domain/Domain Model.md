@@ -537,3 +537,175 @@ Representa un producto incluido en un pedido, con la cantidad y el precio regist
 * El `unitPrice` se registra al confirmar el pedido y no se modifica posteriormente.
 
 ---
+
+# Invoice
+
+## Descripción
+
+Representa la información comercial asociada a la venta de un pedido.
+
+La factura se emite una vez confirmado el pago del pedido.
+
+## Hereda de
+
+`BusinessEntity`
+
+## Atributos
+
+| Atributo | Tipo | Descripción |
+| -------- | ---- | ----------- |
+| order | Order | Pedido facturado. |
+| issueDate | LocalDateTime | Fecha y hora de emisión de la factura. |
+| totalAmount | BigDecimal | Valor total facturado. |
+| currency | Currency | Moneda en la que se expresa el valor facturado. |
+
+## Reglas
+
+* Toda factura corresponde a un único pedido.
+* La factura solo puede emitirse cuando el pedido se encuentra en estado `PAID`.
+* El `totalAmount` debe coincidir con el valor total del pedido.
+
+---
+
+# Shipment
+
+## Descripción
+
+Representa el proceso logístico de despacho y transporte de un pedido hacia la dirección de entrega del comprador.
+
+Únicamente los pedidos que contienen productos físicos generan un envío.
+
+## Hereda de
+
+`BusinessEntity`
+
+## Atributos
+
+| Atributo | Tipo | Descripción |
+| -------- | ---- | ----------- |
+| order | Order | Pedido despachado. |
+| warehouse | Warehouse | Bodega desde la que se realiza el despacho. |
+| deliveryAddress | Address | Dirección de entrega del envío. |
+| dispatchDate | LocalDateTime | Fecha y hora del despacho. |
+| deliveryDate | LocalDateTime | Fecha y hora de la entrega confirmada. |
+| handledBy | User | Operador logístico responsable del envío. |
+
+## Reglas
+
+* Todo envío corresponde a un único pedido.
+* El despacho es responsabilidad del Operador Logístico.
+* Los pedidos compuestos únicamente por productos digitales no generan envío.
+* La `deliveryDate` solo se registra cuando la entrega ha sido confirmada.
+
+---
+
+# Return
+
+## Descripción
+
+Representa la solicitud de devolución de un pedido realizada por un comprador.
+
+## Hereda de
+
+`BusinessEntity`
+
+## Atributos
+
+| Atributo | Tipo | Descripción |
+| -------- | ---- | ----------- |
+| order | Order | Pedido sobre el que se solicita la devolución. |
+| reason | String | Motivo de la devolución indicado por el comprador. |
+| requestDate | LocalDateTime | Fecha y hora de la solicitud. |
+| approvalDate | LocalDateTime | Fecha y hora de la aprobación de la devolución. |
+| requestedBy | Buyer | Comprador que solicitó la devolución. |
+| approvedBy | User | Usuario que aprobó la devolución. |
+| refund | Refund | Reembolso asociado a la devolución. |
+
+## Reglas
+
+* Toda devolución corresponde a un único pedido.
+* La devolución solo puede solicitarse sobre pedidos entregados.
+* La aprobación de la devolución genera un movimiento de inventario de tipo `RETURN`.
+
+---
+
+# Refund
+
+## Descripción
+
+Representa la restitución del valor pagado por un comprador tras la aprobación de una devolución.
+
+## Hereda de
+
+`BusinessEntity`
+
+## Atributos
+
+| Atributo | Tipo | Descripción |
+| -------- | ---- | ----------- |
+| returnRequest | Return | Devolución que originó el reembolso. |
+| amount | BigDecimal | Valor reembolsado al comprador. |
+| currency | Currency | Moneda en la que se expresa el reembolso. |
+| executionDate | LocalDateTime | Fecha y hora de la ejecución del reembolso. |
+| executedBy | User | Usuario que ejecutó el reembolso. |
+
+## Reglas
+
+* Todo reembolso corresponde a una única devolución.
+* El reembolso solo puede ejecutarse sobre devoluciones aprobadas.
+* El `amount` debe ser estrictamente mayor que cero.
+
+---
+
+# Operation
+
+## Descripción
+
+Representa una acción significativa ejecutada por un usuario sobre una entidad de negocio del marketplace.
+
+Cada operación identifica qué se hizo, sobre qué entidad, quién la ejecutó y en qué momento.
+
+## Atributos
+
+| Atributo | Tipo | Descripción |
+| -------- | ---- | ----------- |
+| operationId | String | Identificador único de la operación. |
+| operationType | OperationType | Categoría de la operación ejecutada. |
+| executionDate | LocalDateTime | Fecha y hora de ejecución de la operación. |
+| performedBy | User | Usuario que ejecutó la operación. |
+| affectedEntity | BusinessEntity | Entidad de negocio afectada por la operación. |
+
+## Reglas
+
+* Toda operación debe estar asociada a un usuario autenticado.
+* Toda operación debe registrar la entidad de negocio sobre la que se ejecutó.
+
+---
+
+# AuditLog
+
+## Descripción
+
+Representa el registro histórico e inmutable de una operación ejecutada dentro del marketplace.
+
+Permite el seguimiento y la trazabilidad de las acciones realizadas sobre las entidades de negocio.
+
+## Atributos
+
+| Atributo | Tipo | Descripción |
+| -------- | ---- | ----------- |
+| auditId | String | Identificador único del registro de auditoría. |
+| operationType | OperationType | Categoría de la operación registrada. |
+| operationDate | LocalDateTime | Fecha y hora en que se generó el registro. |
+| performedBy | User | Usuario que ejecutó la operación. |
+| userRole | SystemRole | Rol del usuario en el momento de la operación. |
+| affectedEntity | BusinessEntity | Entidad de negocio afectada por la operación. |
+| details | Map\<String, Object\> | Datos variables según el tipo de operación registrada. |
+
+## Reglas
+
+* Los registros de auditoría son inmutables: no pueden modificarse ni eliminarse.
+* Toda operación significativa debe generar un registro de auditoría.
+* El `userRole` se registra tal como estaba al momento de la operación.
+
+---
